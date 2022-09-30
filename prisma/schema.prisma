@@ -1,0 +1,40 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "sqlite"
+    url      = env("DATABASE_URL")
+}
+
+model Song {
+    id        Int      @id @default(autoincrement())
+    title     String
+    createdAt DateTime @default(now())
+    authors   Author[]
+    media     Media?
+    color1    String
+    color2    String
+    color3    String
+}
+
+// The audio. Currently just sourced from YouTube
+model Media {
+    id        Int     @id @default(autoincrement())
+    song      Song    @relation(fields: [songId], references: [id])
+    songId    Int     @unique
+    // In seconds
+    duration  Int
+    // Only 'yt' as of now
+    type      String
+    youtubeId String? @unique
+}
+
+model Author {
+    id    Int    @id @default(autoincrement())
+    name  String @unique
+    songs Song[]
+}
