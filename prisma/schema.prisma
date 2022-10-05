@@ -31,6 +31,8 @@ model Media {
     // Only 'yt' as of now
     type      String
     youtubeId String? @unique
+    // If the media is unavailable for one reason or another
+    flagged   Boolean @default(false)
 }
 
 model Author {

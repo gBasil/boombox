@@ -8,6 +8,8 @@ import fetch from 'node-fetch';
 import { rmSync } from 'fs';
 import { Author } from '@prisma/client';
 import Vibrant from 'node-vibrant';
+import recheckSongs from '../../utils/recheckSongs';
+import { setNowPlaying } from '../../utils/server/nowPlaying';
 
 export const manageRouter = createRouter()
 	.middleware(({ next, ctx }) => {
@@ -45,11 +47,10 @@ export const manageRouter = createRouter()
 				});
 
 			// Get colors from thumbnail
-			const data = Buffer.from(
-				input.cover.split(',')[1] as string,
-				'base64'
-			);
-			const colors = await Vibrant.from(data)
+			const data = sharp(
+				Buffer.from(input.cover.split(',')[1] as string, 'base64')
+			).resize(216, 216);
+			const colors = await Vibrant.from(await data.png().toBuffer())
 				.maxColorCount(3)
 				.getPalette();
 
@@ -82,14 +83,8 @@ export const manageRouter = createRouter()
 				},
 			});
 
-			const body = Buffer.from(
-				input.cover.split(',')[1] as string,
-				'base64'
-			);
-			await sharp(body)
-				.resize(216, 216)
-				.webp()
-				.toFile(`./images/${song.id}.webp`);
+			// Save thumbnail to file
+			data.webp().toFile(`./images/${song.id}.webp`);
 		},
 	})
 	// Updates the information of a song
@@ -111,6 +106,20 @@ export const manageRouter = createRouter()
 					message: 'Video does not appear to be playable.',
 				});
 
+			// Get colors from thumbnail
+			const data = sharp(
+				Buffer.from(input.cover.split(',')[1] as string, 'base64')
+			).resize(216, 216);
+			const colors = await Vibrant.from(await data.png().toBuffer())
+				.maxColorCount(3)
+				.getPalette();
+
+			if (!colors.DarkMuted || !colors.Muted || !colors.LightMuted)
+				throw new TRPCError({
+					code: 'INTERNAL_SERVER_ERROR',
+					message: 'Failed to get colors from cover',
+				});
+
 			// Update song
 			const song = await prisma.song.update({
 				where: { id: input.id },
@@ -127,8 +136,12 @@ export const manageRouter = createRouter()
 							type: 'yt',
 							youtubeId: input.youtubeId,
 							duration: parseInt(info.videoDetails.lengthSeconds),
+							flagged: false,
 						},
 					},
+					color1: colors.LightMuted.hex,
+					color2: colors.Muted.hex,
+					color3: colors.DarkMuted.hex,
 				},
 				include: { authors: true },
 			});
@@ -151,14 +164,8 @@ export const manageRouter = createRouter()
 
 			cleanAuthors(song.authors);
 
-			const body = Buffer.from(
-				input.cover.split(',')[1] as string,
-				'base64'
-			);
-			await sharp(body)
-				.resize(216, 216)
-				.webp()
-				.toFile(`./images/${song.id}.webp`);
+			// Save thumbnail to file
+			data.webp().toFile(`./images/${song.id}.webp`);
 		},
 	})
 	// Returns the dataURI of a YouTube thumbnail
@@ -202,6 +209,26 @@ export const manageRouter = createRouter()
 			// Remove the thumbnail as well
 			rmSync(`./images/${input}.webp`);
 		},
+	})
+	// Check all of the songs in the playlist to see if they're watchable
+	// It could realistically be a subscription, but that's probably overkill
+	// TODO: It would be beneficial to add some sort of "already checking" mechanism
+	.query('recheck', {
+		resolve: async () => await recheckSongs(),
+	})
+	// Update the currently playing song
+	.mutation('nowPlaying', {
+		input: z.object({
+			id: z.number(),
+			title: z.string(),
+			authors: z.array(
+				z.object({
+					id: z.number(),
+					name: z.string(),
+				})
+			),
+		}),
+		resolve: ({ input }) => setNowPlaying(input),
 	});
 
 // I'm not sure whether or not you can make this into one query

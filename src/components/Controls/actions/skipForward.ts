@@ -1,5 +1,5 @@
 import Song from '../../../types/Song';
-import { UseState } from '../playerContext';
+import UseState from '../../../types/UseState';
 
 const skipForward = (
 	[song, setSong]: UseState<Song | undefined>,

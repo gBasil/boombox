@@ -1,7 +1,7 @@
 import type { GetServerSideProps, NextPage } from 'next';
-import { Headphones, Library, Plus, RefreshCw } from 'lucide-react';
+import { Headphones, Library, Plus, RefreshCw, Siren } from 'lucide-react';
 import Link from 'next/link';
-import { ReactNode, useState } from 'react';
+import { ReactNode, useMemo, useRef, useState } from 'react';
 import { SongManage } from '../components/Song';
 import AddSong from '../components/AddSong';
 import { trpc } from '../utils/trpc';
@@ -9,8 +9,9 @@ import SongType from '../types/Song';
 import { prisma } from '../server/db/client';
 import { Values } from '../components/AddSong/types';
 import Media from '../types/Media';
-import { logtoClient } from '../utils/logto';
+import { logtoClient } from '../utils/server/logto';
 import Meta from '../components/Meta';
+import toast from 'react-hot-toast';
 
 type Props = {
 	songs: SongType[];
@@ -20,31 +21,52 @@ const IconButton = (props: {
 	children: ReactNode;
 	full?: boolean;
 	onClick?: () => void;
+	className?: string;
+	disabled?: boolean;
 }) => (
 	<button
 		className={`rounded-1 p-1 transition-colors ${
 			props.full
 				? 'bg-lightestGreen text-darkestGreen hover:bg-lightGreen'
 				: 'text-lightestGreen hover:text-lightGreen'
-		}`}
+		} ${props.className}`}
 		onClick={props.onClick}
+		disabled={props.disabled}
 	>
 		{props.children}
 	</button>
 );
 
 const Manage: NextPage<Props> = (props) => {
+	const { client } = trpc.useContext();
 	const { data: songs } = trpc.useQuery(['playlist.list'], {
 		initialData: props.songs,
 	});
+	const [rechecking, setRechecking] = useState(false);
 	const [showAddSong, setShowAddSong] = useState(false);
 	const [editingSong, setEditingSong] = useState<
 		(Values & { id: number }) | undefined
 	>(undefined);
 
+	const firstFlagged = useMemo(
+		() => songs?.find((song) => song.media?.flagged),
+		[songs]
+	);
+	const firstFlaggedEl = useRef<HTMLDivElement>(null);
+	const scrollToFirstFlagged = () => {
+		if (!firstFlaggedEl.current) return;
+
+		firstFlaggedEl.current.scrollIntoView({
+			behavior: 'smooth'
+		});
+	};
+
 	return (
 		<>
-			<Meta title='Dashboard' description='The central management area.' />
+			<Meta
+				title='Dashboard'
+				description='The central management area.'
+			/>
 
 			<h1 className='mt-5 text-center font-newsreader text-title'>
 				Dashboard
@@ -72,9 +94,44 @@ const Manage: NextPage<Props> = (props) => {
 							}`}
 						/>
 					</IconButton>
-					<IconButton full>
-						<RefreshCw />
+					<IconButton full disabled={rechecking}>
+						<RefreshCw
+							onClick={async () => {
+								setRechecking(true);
+								toast('Rechecking, please wait');
+								client
+									.query('manage.recheck')
+									.then(async (val) => {
+										if (val.length)
+											toast.error(
+												`${val.length} song${
+													val.length === 1
+														? ' is'
+														: 's are'
+												} unavailable`
+											);
+										else
+											toast.success(
+												'All songs are alright'
+											);
+
+										setRechecking(false);
+									});
+							}}
+							className={rechecking ? 'animate-spin' : ''}
+						/>
 					</IconButton>
+
+					{songs?.some((song) => song.media?.flagged) ? (
+						<IconButton
+							full
+							// TODO: Make separate colors for hover and such
+							className='bg-red hover:bg-red'
+							onClick={() => scrollToFirstFlagged()}
+						>
+							<Siren />
+						</IconButton>
+					) : null}
 				</div>
 
 				<AddSong
@@ -87,6 +144,11 @@ const Manage: NextPage<Props> = (props) => {
 					{songs && songs.length ? (
 						songs.map((song, i) => (
 							<SongManage
+								{...(song.id === firstFlagged?.id
+									? {
+											ref: firstFlaggedEl,
+									  }
+									: {})}
 								key={i}
 								song={song as SongType}
 								onClick={async () => {
@@ -99,6 +161,7 @@ const Manage: NextPage<Props> = (props) => {
 										cover: `data:${cover.headers.get(
 											'content-type'
 										)};base64,${Buffer.from(
+											// TODO: Resize on frontend
 											await cover.arrayBuffer()
 										).toString('base64')}`,
 										authors: song.authors

@@ -1,7 +1,7 @@
 import { useFormikContext } from 'formik';
 import { FileUp } from 'lucide-react';
 import { useRef } from 'react';
-import fileToData from '../../utils/fileToData';
+import fileToURI from '../../utils/fileToURI';
 import { Values } from './types';
 
 const FileUpload = () => {
@@ -26,7 +26,7 @@ const FileUpload = () => {
 				onChange={async (e) => {
 					if (e.currentTarget.files && e.currentTarget.files[0]) {
 						const file = e.currentTarget.files[0];
-						setFieldValue('cover', await fileToData(file));
+						setFieldValue('cover', await fileToURI(file));
 					}
 				}}
 			/>

@@ -1,3 +1,3 @@
-import { logtoClient } from '../../../utils/logto';
+import { logtoClient } from '../../../utils/server/logto';
 
 export default logtoClient.handleAuthRoutes();

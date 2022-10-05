@@ -15,11 +15,12 @@ import formatSeconds from '../../utils/formatSeconds';
 import shuffle from './actions/shuffle';
 import skipBack from './actions/skipBack';
 import skipForward from './actions/skipForward';
-import { PlayerContext, UseState } from './playerContext';
+import { PlayerContext } from './playerContext';
 import YouTubePlayer from './YouTubePlayer';
 import { usePrevious } from '@radix-ui/react-use-previous';
 import Popup from './Popup';
 import Stripes from '../Stripes';
+import UseState from '../../types/UseState';
 
 enum EndMode {
 	NEXT,
@@ -29,13 +30,15 @@ enum EndMode {
 
 type ControlsProps = {
 	progress: UseState<number>;
+	playing: UseState<boolean>;
 };
 
 const Controls = (props: ControlsProps) => {
 	// Playback state
 	const [endMode, setEndMode] = useState<EndMode>(EndMode.NEXT);
-	const [playing, setPlaying] = useState(false);
+	const [playing, setPlaying] = props.playing;
 	const [progress, setProgress] = props.progress;
+	const [volume, setVolume] = useState(100);
 
 	// Seek to position in song
 	const prevProgress = usePrevious(progress);
@@ -103,7 +106,13 @@ const Controls = (props: ControlsProps) => {
 				</Slider.Root>
 
 				{/* Ensure the player controller is passed through */}
-				{player && <Popup open={showPopup} player={player} />}
+				{player && (
+					<Popup
+						open={showPopup}
+						player={player}
+						volume={[volume, setVolume]}
+					/>
+				)}
 
 				<div className='mt-1 flex justify-between text-lightGreen'>
 					<a className='w-full text-start'>
@@ -193,7 +202,12 @@ const Controls = (props: ControlsProps) => {
 									autoplay: 1,
 								},
 							}}
-							onPlay={() => setPlaying(true)}
+							onPlay={() => {
+								setPlaying(true);
+								// Update the player volume, since it resets on rerenders.
+								// It's not flawless, but it'll work for now
+								player?.setVolume(volume);
+							}}
 							onPause={() => setPlaying(false)}
 							onEnd={() => {
 								switch (endMode) {

@@ -12,9 +12,7 @@ type Props = {
 
 const Song = (props: Props) => (
 	<button
-		className={`group flex w-full gap-2 ${
-			props.className
-		}`}
+		className={`group flex w-full gap-2 ${props.className}`}
 		onClick={props.onClick}
 	>
 		<div className='relative w-[72px] shrink-0'>
@@ -25,19 +23,35 @@ const Song = (props: Props) => (
 				alt=''
 				width={72}
 				height={72}
-				className={`rounded-1 border-2 border-lightestGreen shadow-lightestGreen transition-shadow ${
-					props.playing ? 'shadow-glow' : 'shadow-[0_0_0]'
+				className={`rounded-1 border-2 ${
+					props.song.media.flagged
+						? 'border-red shadow-red'
+						: 'border-lightestGreen shadow-lightestGreen'
+				} transition-shadow ${
+					props.playing
+						? 'motion-safe:animate-glow-pulse motion-reduce:shadow-glow'
+						: ''
 				}`}
 			/>
-			<div className='absolute inset-0 rounded-1 bg-lightestGreen opacity-0 transition-opacity group-hover:opacity-30' />
-			<span className='absolute bottom-0 right-0 rounded-tl-1 rounded-br-1 bg-lightestGreen py-[2px] px-[6px] text-[12px] font-bold leading-[16px] text-darkestGreen'>
+			<div
+				className={`absolute inset-0 rounded-1 ${
+					props.song.media.flagged ? 'bg-red' : 'bg-lightestGreen'
+				} opacity-0 transition-opacity group-hover:opacity-30`}
+			/>
+			<span
+				className={`absolute bottom-0 right-0 rounded-tl-1 rounded-br-1 ${
+					props.song.media.flagged ? 'bg-red' : 'bg-lightestGreen'
+				} py-[2px] px-[6px] text-[12px] font-bold leading-[16px] text-darkestGreen`}
+			>
 				{formatSeconds(props.song.media.duration)}
 			</span>
 		</div>
 
 		<div className='my-auto flex w-[calc(100%_-_88px)] flex-col items-start'>
 			<h3
-				className='w-full truncate text-left text-[20px] font-bold leading-[32px] text-lightestGreen'
+				className={`w-full truncate text-left text-[20px] font-bold leading-[32px] ${
+					props.song.media.flagged ? 'text-red' : 'text-lightestGreen'
+				}`}
 				title={props.song.title}
 			>
 				{props.song.title}

@@ -51,6 +51,10 @@ module.exports = {
 			// subheader: ['1.25rem', '2rem'],
 			base: ['1rem', '1.5rem'],
 		},
+
+		animation: {
+			'glow-pulse': 'glow-pulse 1s ease-in-out infinite'
+		}
 	},
 	plugins: [
 		plugin(({ addVariant, addUtilities }) => {

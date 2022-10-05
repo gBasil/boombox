@@ -14,7 +14,14 @@ const SongManage = (props: SongManageProps) => {
 
 	const play = () => setSong(props.song);
 
-	return <Song song={props.song} className='w-full' onClick={play} playing={song?.id === props.song.id} />;
+	return (
+		<Song
+			song={props.song}
+			className='w-full'
+			onClick={play}
+			playing={song?.id === props.song.id}
+		/>
+	);
 };
 
 export default SongManage;

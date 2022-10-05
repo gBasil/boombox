@@ -17,6 +17,13 @@ const Cover = ({ song }: CoverTypes) => {
 			return <YourReality />;
 		case 'SR-YU-VoiBc':
 			return <CloudsInTheBlue />;
+		// 7 Grand dad. Roundabout reference which only one person *may* understand if they stumble across this. 
+		// 	return <Default song={{
+		// 		...song,
+		// 			color2: '#FA7952',
+		// 			color1: '#0074FD',
+		// 			color3: '#AA0C00',
+		// 	}} />;
 		default:
 			return <Default song={song} />;
 	}

@@ -2,7 +2,7 @@ import type { NextPage } from 'next';
 import Casette from '../components/Casette';
 import { ArrowRight, LayoutDashboard } from 'lucide-react';
 import Link from 'next/link';
-import { logtoClient } from '../utils/logto';
+import { logtoClient } from '../utils/server/logto';
 import { LogtoContext } from '@logto/next';
 import Meta from '../components/Meta';
 

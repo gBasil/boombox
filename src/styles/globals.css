@@ -3,27 +3,37 @@
 @tailwind utilities;
 
 @font-face {
-    font-family: 'Inter';
-    src: url('/fonts/Inter-Regular.ttf') format('truetype');
-    font-weight: normal;
-    font-style: normal;
+	font-family: 'Inter';
+	src: url('/fonts/Inter-Regular.ttf') format('truetype');
+	font-weight: normal;
+	font-style: normal;
 }
 
 @font-face {
-    font-family: 'Inter';
-    src: url('/fonts/Inter-Bold.ttf') format('truetype');
-    font-weight: bold;
-    font-style: normal;
+	font-family: 'Inter';
+	src: url('/fonts/Inter-Bold.ttf') format('truetype');
+	font-weight: bold;
+	font-style: normal;
 }
 
 @font-face {
-    font-family: 'Newsreader';
-    src: url('/fonts/Newsreader-Regular.ttf') format('truetype');
-    font-weight: normal;
-    font-style: normal;
+	font-family: 'Newsreader';
+	src: url('/fonts/Newsreader-Regular.ttf') format('truetype');
+	font-weight: normal;
+	font-style: normal;
 }
 
 /* Make all strokes have the same width, regardless of size. Matches up with Figma */
 svg:not(.ignore-no-scaling) * {
-    vector-effect: non-scaling-stroke;
+	vector-effect: non-scaling-stroke;
+}
+
+@keyframes glow-pulse {
+	from,
+	to {
+		box-shadow: var(--tw-shadow-color) 0 0 0px;
+	}
+	50% {
+		box-shadow: var(--tw-shadow-color) 0 0 20px;
+	}
 }

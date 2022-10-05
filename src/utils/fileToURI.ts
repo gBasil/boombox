@@ -1,5 +1,5 @@
 // Convert a file to a dataURI
-const fileToData = (file: File) =>
+const fileToURI = (file: File) =>
 	new Promise((resolve, reject) => {
 		const reader = new FileReader();
 		reader.onload = (e) => {
@@ -11,4 +11,4 @@ const fileToData = (file: File) =>
 		reader.readAsDataURL(file);
 	});
 
-export default fileToData;
+export default fileToURI;
