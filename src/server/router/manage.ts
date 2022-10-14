@@ -10,6 +10,26 @@ import { Author } from '@prisma/client';
 import Vibrant from 'node-vibrant';
 import recheckSongs from '../../utils/recheckSongs';
 import { setNowPlaying } from '../../utils/server/nowPlaying';
+import scrobble from '../../utils/scrobble';
+
+const song = z.object({
+	id: z.number(),
+	title: z.string(),
+	authors: z.object({
+		id: z.number(),
+		name: z.string()
+	}).array(),
+	media: z.object({
+		type: z.literal('yt'),
+		id: z.number(),
+		youtubeId: z.string().optional(),
+		duration: z.number(),
+		flagged: z.boolean()
+	}),
+	color1: z.string(),
+	color2: z.string(),
+	color3: z.string(),
+});
 
 export const manageRouter = createRouter()
 	.middleware(({ next, ctx }) => {
@@ -50,6 +70,7 @@ export const manageRouter = createRouter()
 			const data = sharp(
 				Buffer.from(input.cover.split(',')[1] as string, 'base64')
 			).resize(216, 216);
+			// TODO: Make this actually have good contrast
 			const colors = await Vibrant.from(await data.png().toBuffer())
 				.maxColorCount(3)
 				.getPalette();
@@ -229,6 +250,13 @@ export const manageRouter = createRouter()
 			),
 		}),
 		resolve: ({ input }) => setNowPlaying(input),
+	})
+	.mutation('scrobble', {
+		input: z.object({
+			song,
+			duration: z.number()
+		}),
+		resolve: ({ input }) => scrobble(input.song, input.duration)
 	});
 
 // I'm not sure whether or not you can make this into one query

@@ -12,9 +12,28 @@ import Media from '../types/Media';
 import { logtoClient } from '../utils/server/logto';
 import Meta from '../components/Meta';
 import toast from 'react-hot-toast';
+import { Variants } from 'framer-motion';
+import { motion } from 'framer-motion';
 
 type Props = {
 	songs: SongType[];
+};
+
+const variants: Variants = {
+	initial: {
+		opacity: 0,
+		x: -50,
+	},
+	enter: {
+		opacity: 1,
+		x: 0,
+		transition: {
+			staggerChildren: 0.05,
+			type: 'spring',
+			stiffness: 260,
+			damping: 20,
+		},
+	},
 };
 
 const IconButton = (props: {
@@ -57,7 +76,7 @@ const Manage: NextPage<Props> = (props) => {
 		if (!firstFlaggedEl.current) return;
 
 		firstFlaggedEl.current.scrollIntoView({
-			behavior: 'smooth'
+			behavior: 'smooth',
 		});
 	};
 
@@ -96,7 +115,7 @@ const Manage: NextPage<Props> = (props) => {
 					</IconButton>
 					<IconButton full disabled={rechecking}>
 						<RefreshCw
-							onClick={async () => {
+							onClick={() => {
 								setRechecking(true);
 								toast('Rechecking, please wait');
 								client
@@ -140,46 +159,52 @@ const Manage: NextPage<Props> = (props) => {
 					song={editingSong}
 					setSong={setEditingSong}
 				/>
-				<div className='mt-[32px] flex flex-col gap-2'>
+				<motion.div
+					className='mt-[32px] flex flex-col gap-2'
+					variants={variants}
+					initial='initial'
+					animate='enter'
+				>
 					{songs && songs.length ? (
 						songs.map((song, i) => (
-							<SongManage
-								{...(song.id === firstFlagged?.id
-									? {
-											ref: firstFlaggedEl,
-									  }
-									: {})}
-								key={i}
-								song={song as SongType}
-								onClick={async () => {
-									const cover = await fetch(
-										`/api/cover/${song.id}`
-									);
+							<motion.div variants={variants} key={i}>
+								<SongManage
+									{...(song.id === firstFlagged?.id
+										? {
+												ref: firstFlaggedEl,
+										  }
+										: {})}
+									song={song as SongType}
+									onClick={async () => {
+										const cover = await fetch(
+											`/api/cover/${song.id}`
+										);
 
-									setEditingSong({
-										id: song.id,
-										cover: `data:${cover.headers.get(
-											'content-type'
-										)};base64,${Buffer.from(
-											// TODO: Resize on frontend
-											await cover.arrayBuffer()
-										).toString('base64')}`,
-										authors: song.authors
-											.map(({ name }) => name)
-											.join(', '),
-										title: song.title,
-										youtubeId: (song.media as Media)
-											.youtubeId as string,
-									});
+										setEditingSong({
+											id: song.id,
+											cover: `data:${cover.headers.get(
+												'content-type'
+											)};base64,${Buffer.from(
+												// TODO: Resize on frontend
+												await cover.arrayBuffer()
+											).toString('base64')}`,
+											authors: song.authors
+												.map(({ name }) => name)
+												.join(', '),
+											title: song.title,
+											youtubeId: (song.media as Media)
+												.youtubeId as string,
+										});
 
-									setShowAddSong(true);
-								}}
-							/>
+										setShowAddSong(true);
+									}}
+								/>
+							</motion.div>
 						))
 					) : (
 						<p className='text-center'>No songs</p>
 					)}
-				</div>
+				</motion.div>
 			</main>
 		</>
 	);

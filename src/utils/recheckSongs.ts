@@ -22,7 +22,6 @@ const recheckSongs = () =>
 
 		// Sort of a queue. May trigger ratelimits, I haven't tested it with a lot of videos
 		for (const song of songs) {
-			console.log(song.title);
 			if (!song.media?.youtubeId) continue;
 
 			const id = song.media.youtubeId;

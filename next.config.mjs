@@ -1,5 +1,3 @@
-import { env } from './src/env/server.mjs';
-
 /**
  * Don't be scared of the generics here.
  * All they do is to give us autocompletion when using this.
@@ -27,7 +25,8 @@ export default defineNextConfig({
 		{
 			source: '/sign-in',
 			destination: '/api/logto/sign-in',
-			permanent: true
-		}
-	]
+			permanent: true,
+		},
+	],
+	output: 'standalone',
 });

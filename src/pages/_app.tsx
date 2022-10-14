@@ -8,6 +8,7 @@ import superjson from 'superjson';
 
 import '../styles/globals.css';
 import tailwindConfig from '../../tailwind.config.cjs';
+import { AnimatePresence } from 'framer-motion';
 
 type Colors = {
 	lightestGreen: string;
@@ -18,7 +19,7 @@ type Colors = {
 
 const colors: Colors = tailwindConfig.theme?.colors as Colors;
 
-const App: AppType = ({ Component, pageProps }) => {
+const App: AppType = ({ Component, pageProps, router }) => {
 	return (
 		<>
 			<Toaster
@@ -52,7 +53,12 @@ const App: AppType = ({ Component, pageProps }) => {
 					},
 				}}
 			/>
-			<Component {...pageProps} />
+			<AnimatePresence
+				mode='wait'
+				initial={false}
+			>
+				<Component {...pageProps} key={router.route} />
+			</AnimatePresence>
 		</>
 	);
 };

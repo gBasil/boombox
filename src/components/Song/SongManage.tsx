@@ -11,7 +11,7 @@ type SongManageProps = {
 const SongManage = forwardRef(
 	(props: SongManageProps, ref: ForwardedRef<HTMLDivElement>) => {
 		return (
-			<div className='flex justify-between' ref={ref}>
+			<div className='flex justify-between pr-1' ref={ref}>
 				<Song
 					song={props.song}
 					playing={props.song.media.flagged}

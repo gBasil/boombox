@@ -1,3 +1,4 @@
+// Small casette icon
 const Casette = () => {
 	return (
 		<svg

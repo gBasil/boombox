@@ -15,5 +15,5 @@ export const PlayerContext = createContext<Player>({
 	// eslint-disable-next-line
 	song: null as any,
 	// eslint-disable-next-line
-	zen: null as any,
+	zen: null as any
 });

@@ -4,7 +4,11 @@ const plugin = require('tailwindcss/plugin');
 module.exports = {
 	content: ['./src/**/*.{js,ts,jsx,tsx}'],
 	theme: {
-		extend: {},
+		extend: {
+			animation: {
+				'glow-pulse': 'glow-pulse 1s ease-in-out infinite',
+			},
+		},
 		colors: {
 			lightestGreen: '#CAD2C5',
 			lightGreen: '#84A98C',
@@ -51,10 +55,6 @@ module.exports = {
 			// subheader: ['1.25rem', '2rem'],
 			base: ['1rem', '1.5rem'],
 		},
-
-		animation: {
-			'glow-pulse': 'glow-pulse 1s ease-in-out infinite'
-		}
 	},
 	plugins: [
 		plugin(({ addVariant, addUtilities }) => {
