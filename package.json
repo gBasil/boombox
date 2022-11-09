@@ -1,14 +1,13 @@
 {
 	"name": "boombox",
-	"version": "0.1.0",
+	"version": "1.0.0-beta",
 	"private": true,
 	"scripts": {
 		"dev": "next dev",
 		"build": "next build",
-		"start": "next start",
+		"start": "prisma migrate deploy && next start",
 		"lint": "next lint",
 		"gen": "yarn postinstall",
-		"purge": "rm -f images/*.webp && rm -f prisma/db.sqlite && prisma db push",
 		"postinstall": "export CHECKPOINT_DISABLE=1 && prisma generate"
 	},
 	"dependencies": {
@@ -22,6 +21,7 @@
 		"@trpc/next": "^9.27.2",
 		"@trpc/react": "^9.27.2",
 		"@trpc/server": "^9.27.2",
+		"csv-parse": "^5.3.1",
 		"formik": "^2.2.9",
 		"framer-motion": "^7.3.4",
 		"lucide-react": "^0.88.0",

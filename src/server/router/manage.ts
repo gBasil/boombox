@@ -1,36 +1,41 @@
 import { createRouter } from './context';
 import { z } from 'zod';
 import { prisma } from '../db/client';
-import sharp from 'sharp';
+import sharp, { Sharp } from 'sharp';
 import { TRPCError } from '@trpc/server';
 import ytdl from 'ytdl-core';
 import fetch from 'node-fetch';
 import { rmSync } from 'fs';
 import { Author } from '@prisma/client';
 import Vibrant from 'node-vibrant';
-import recheckSongs from '../../utils/recheckSongs';
+import recheckSongs from '../../utils/server/recheckSongs';
 import { setNowPlaying } from '../../utils/server/nowPlaying';
-import scrobble from '../../utils/scrobble';
+import scrobble from '../../utils/server/scrobble';
+import bufferToURI from '../../utils/bufferToURI';
+import { env } from '../../env/server';
 
 const song = z.object({
 	id: z.number(),
 	title: z.string(),
-	authors: z.object({
-		id: z.number(),
-		name: z.string()
-	}).array(),
+	authors: z
+		.object({
+			id: z.number(),
+			name: z.string(),
+		})
+		.array(),
 	media: z.object({
 		type: z.literal('yt'),
 		id: z.number(),
 		youtubeId: z.string().optional(),
 		duration: z.number(),
-		flagged: z.boolean()
+		flagged: z.boolean(),
 	}),
 	color1: z.string(),
 	color2: z.string(),
 	color3: z.string(),
 });
 
+// TODO: Remove duplicate code
 export const manageRouter = createRouter()
 	.middleware(({ next, ctx }) => {
 		if (
@@ -54,6 +59,7 @@ export const manageRouter = createRouter()
 			// Zod doesn't seem to support partials
 			youtubeId: z.string(),
 			cover: z.string(),
+			date: z.date().optional()
 		}),
 		resolve: async ({ input }) => {
 			// Create and add the media to the song
@@ -70,7 +76,7 @@ export const manageRouter = createRouter()
 			const data = sharp(
 				Buffer.from(input.cover.split(',')[1] as string, 'base64')
 			).resize(216, 216);
-			// TODO: Make this actually have good contrast
+			// TODO: Make this actually ensure good contrast
 			const colors = await Vibrant.from(await data.png().toBuffer())
 				.maxColorCount(3)
 				.getPalette();
@@ -101,11 +107,12 @@ export const manageRouter = createRouter()
 					color1: colors.LightMuted.hex,
 					color2: colors.Muted.hex,
 					color3: colors.DarkMuted.hex,
+					createdAt: input.date
 				},
 			});
 
 			// Save thumbnail to file
-			data.webp().toFile(`./images/${song.id}.webp`);
+			data.webp().toFile(`./data/images/${song.id}.webp`);
 		},
 	})
 	// Updates the information of a song
@@ -186,13 +193,21 @@ export const manageRouter = createRouter()
 			cleanAuthors(song.authors);
 
 			// Save thumbnail to file
-			data.webp().toFile(`./images/${song.id}.webp`);
+			data.webp().toFile(`./data/images/${song.id}.webp`);
+
+			upload({
+				authors: input.authors,
+				title: input.title,
+				image: data,
+			});
 		},
 	})
 	// Returns the dataURI of a YouTube thumbnail
 	.query('thumbnail', {
 		input: z.string(),
 		resolve: async ({ input }) => {
+			//! Sometimes fails to fetch on low res thumbnails
+			// TODO: Try alternate thumbnails until we find one that works
 			const thumbnail = await fetch(
 				`https://i.ytimg.com/vi/${input}/maxresdefault.jpg`
 			);
@@ -209,6 +224,16 @@ export const manageRouter = createRouter()
 				'base64'
 			)}`;
 		},
+	})
+	.query('info', {
+		input: z.string(),
+		resolve: async ({ input }) => {
+			const data = await ytdl.getBasicInfo(input);
+			return {
+				title: data.videoDetails.title,
+				channel: data.videoDetails.author.name,
+			};
+		}
 	})
 	// Removes a song by id
 	.mutation('remove', {
@@ -228,7 +253,7 @@ export const manageRouter = createRouter()
 			cleanAuthors(song.authors);
 
 			// Remove the thumbnail as well
-			rmSync(`./images/${input}.webp`);
+			rmSync(`./data/images/${input}.webp`);
 		},
 	})
 	// Check all of the songs in the playlist to see if they're watchable
@@ -254,9 +279,9 @@ export const manageRouter = createRouter()
 	.mutation('scrobble', {
 		input: z.object({
 			song,
-			duration: z.number()
+			duration: z.number(),
 		}),
-		resolve: ({ input }) => scrobble(input.song, input.duration)
+		resolve: ({ input }) => scrobble(input.song, input.duration),
 	});
 
 // I'm not sure whether or not you can make this into one query
@@ -282,4 +307,30 @@ const cleanAuthors = (authors: Author[]) =>
 
 			return;
 		})
+	);
+
+// Internal Maloja endpoint, but it's not exposed any other way
+const upload = async (input: {
+	title: string;
+	authors: string[];
+	image: Sharp;
+}) =>
+	fetch(
+		`${env.MALOJA_URL}/apis/mlj_1/addpicture?title=${
+			input.title
+		}${input.authors.map((artist) => `&artist=${artist}`).join('')}`,
+		{
+			method: 'POST',
+			headers: {
+				'content-type': 'application/json',
+			},
+			body: JSON.stringify({
+				// No need to resize, we already did that
+				b64: bufferToURI(
+					'image/png',
+					await input.image.png().toBuffer()
+				),
+				key: process.env.MALOJA_API_KEY,
+			}),
+		}
 	);

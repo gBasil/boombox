@@ -38,7 +38,8 @@ yarn-error.log*
 *.tsbuildinfo
 
 # hosting/debugging
-images/*.webp
+/data/images/*.webp
+/data/db.sqlite
 
 # local testing
 /logto

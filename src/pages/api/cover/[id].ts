@@ -2,7 +2,7 @@ import { existsSync, readFileSync } from 'fs';
 import { NextApiHandler } from 'next';
 
 const handler: NextApiHandler = (req, res) => {
-	const path = `./images/${req.query.id}.webp`;
+	const path = `./data/images/${req.query.id}.webp`;
 
 	if (!existsSync(path)) return res.status(404).end();
 

@@ -1,6 +1,6 @@
 import ytdl from 'ytdl-core';
-import { prisma } from '../server/db/client';
-import Media from '../types/Media';
+import { prisma } from '../../server/db/client';
+import Media from '../../types/Media';
 
 type Song = {
 	id: number;

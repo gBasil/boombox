@@ -6,8 +6,18 @@ import { z } from 'zod';
  * This way you can ensure the app isn't built with invalid env vars.
  */
 export const serverSchema = z.object({
-	DATABASE_URL: z.string().url(),
 	NODE_ENV: z.enum(['development', 'test', 'production']),
+
+	LOGTO_ENDPOINT: z.string().url(),
+	LOGTO_BASE_URL: z.string().url(),
+	LOGTO_COOKIE_SECRET: z.string(),
+	LOGTO_APP_ID: z.string(),
+	LOGTO_APP_SECRET: z.string(),
+	MALOJA_URL: z.string().url(),
+	MALOJA_API_KEY: z.string(),
+
+	// TODO: Actually parse booleans
+	BOOMBOX_MALOJA_REQUIRE_AUTH: z.enum(['true', 'false']).optional().default('false')
 });
 
 /**
@@ -16,7 +26,7 @@ export const serverSchema = z.object({
  * To expose them to the client, prefix them with `NEXT_PUBLIC_`.
  */
 export const clientSchema = z.object({
-	// NEXT_PUBLIC_BAR: z.string(),
+	// NEXT_PUBLIC_MALOJA_URL: z.string().url(),
 });
 
 /**
@@ -26,5 +36,5 @@ export const clientSchema = z.object({
  * @type {{ [k in keyof z.infer<typeof clientSchema>]: z.infer<typeof clientSchema>[k] | undefined }}
  */
 export const clientEnv = {
-	// NEXT_PUBLIC_BAR: process.env.NEXT_PUBLIC_BAR,
+	// NEXT_PUBLIC_MALOJA_URL: process.env.MALOJA_URL
 };

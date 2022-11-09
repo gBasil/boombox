@@ -7,7 +7,7 @@ generator client {
 
 datasource db {
     provider = "sqlite"
-    url      = env("DATABASE_URL")
+    url      = "file:../data/db.sqlite"
 }
 
 model Song {
@@ -21,7 +21,7 @@ model Song {
     color3    String
 }
 
-// The audio. Currently just sourced from YouTube
+// The audio, currently just sourced from YouTube
 model Media {
     id        Int     @id @default(autoincrement())
     song      Song    @relation(fields: [songId], references: [id])

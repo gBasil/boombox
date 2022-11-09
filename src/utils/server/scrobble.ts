@@ -1,12 +1,13 @@
 import fetch from 'node-fetch';
-import Song from '../types/Song';
+import { env } from '../../env/server';
+import Song from '../../types/Song';
 
 const scrobblable = (length: number, seconds: number) =>
 	seconds >= length / 2 || seconds >= 60 * 4;
 
 const save = (song: Song, durations: number[]) => {
 	for (const duration of durations)
-		fetch(`${process.env.MALOJA_URL}/apis/mlj_1/newscrobble`, {
+		fetch(`${env.MALOJA_URL}/apis/mlj_1/newscrobble`, {
 			method: 'POST',
 			headers: {
 				'content-type': 'application/json',
@@ -18,8 +19,7 @@ const save = (song: Song, durations: number[]) => {
 				length: song.media.duration, // Length of song
 				key: process.env.MALOJA_API_KEY
 			}),
-		}).then(res => res.text()).then(data => console.log(data));
-	// console.log('---');
+		});
 };
 
 /**
@@ -66,6 +66,7 @@ const scrobble = (song: Song, duration: number) => {
 
 export default scrobble;
 
+// Expected scrobble output. Should be put in a unit test or something
 // scrobble(t(3, 0), t(1, 22)); // Nothing
 // scrobble(t(3, 0), t(2, 6));  // 126
 // scrobble(t(3, 0), t(3, 57)); // 237

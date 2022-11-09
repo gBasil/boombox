@@ -10,30 +10,14 @@ import Casette from '../components/Casette';
 import Meta from '../components/Meta';
 import { logtoClient } from '../utils/server/logto';
 import { LogtoContext } from '@logto/next';
-import { motion, Variants } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { trpc } from '../utils/trpc';
 import { usePrevious } from '@radix-ui/react-use-previous';
+import { variants } from '.';
 
 type Props = {
 	songs: SongType[];
 	user: LogtoContext;
-};
-
-const variants: Variants = {
-	initial: {
-		opacity: 0,
-		x: -50,
-	},
-	enter: {
-		opacity: 1,
-		x: 0,
-		transition: {
-			// staggerChildren: 0.05,
-			type: 'spring',
-			stiffness: 260,
-			damping: 20,
-		},
-	},
 };
 
 const Playlist: NextPage<Props> = (props) => {
@@ -118,7 +102,12 @@ const Playlist: NextPage<Props> = (props) => {
 					zen: [zen, setZen],
 				}}
 			>
-				<main>
+				<motion.main
+					variants={variants}
+					initial='initial'
+					animate='animate'
+					exit='exit'
+				>
 					<motion.div
 						className='pointer-events-none fixed inset-0 z-20'
 						initial={{
@@ -145,29 +134,24 @@ const Playlist: NextPage<Props> = (props) => {
 							opacity: zen ? 0 : 1,
 						}}
 					>
-						<motion.div
-							className='z-10 m-auto mt-8 mb-[216px] flex max-w-2col flex-col gap-2'
-							variants={variants}
-							initial='initial'
-							animate='enter'
-						>
+						<div className='z-10 m-auto mt-8 mb-[216px] flex max-w-2col flex-col gap-2'>
 							{props.songs.length ? (
 								props.songs.map((song, i) => (
-									<motion.div key={i} variants={variants}>
+									<div key={i}>
 										<SongPlaylist song={song} />
-									</motion.div>
+									</div>
 								))
 							) : (
 								<p className='text-center'>No songs</p>
 							)}
-						</motion.div>
+						</div>
 					</motion.div>
 
 					<Controls
 						progress={progressState}
 						playing={[playing, setPlaying]}
 					/>
-				</main>
+				</motion.main>
 			</PlayerContext.Provider>
 		</>
 	);

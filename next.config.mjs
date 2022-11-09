@@ -27,6 +27,11 @@ export default defineNextConfig({
 			destination: '/api/logto/sign-in',
 			permanent: true,
 		},
+		{
+			source: '/maloja',
+			destination: '/api/malojaRedirect',
+			permanent: true,
+		},
 	],
 	output: 'standalone',
 });

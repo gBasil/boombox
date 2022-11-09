@@ -1,6 +1,5 @@
-// src/server/db/client.ts
 import { PrismaClient } from '@prisma/client';
-import { env } from '../../env/server.mjs';
+import { env } from '../../env/server';
 
 declare global {
 	// eslint-disable-next-line no-var
@@ -14,6 +13,14 @@ export const prisma =
 			env.NODE_ENV === 'development'
 				? ['query', 'error', 'warn']
 				: ['error'],
+		datasources: {
+			db: {
+				url: `file:${
+					// TODO: Test if this works
+					env.NODE_ENV === 'production' ? './data/db.sqlite' : '../data/db.sqlite'
+				}`,
+			},
+		},
 	});
 
 if (env.NODE_ENV !== 'production') {

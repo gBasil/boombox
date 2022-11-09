@@ -5,6 +5,7 @@ import { Values } from './types';
 type Props = {
 	loading: boolean;
 	song?: Values;
+	import?: boolean;
 };
 
 const SubmitButton = (props: Props) => {
@@ -17,7 +18,7 @@ const SubmitButton = (props: Props) => {
 			disabled={disabled || props.loading}
 			className='w-full max-w-1col rounded-1 bg-lightestGreen py-1 flex justify-center font-bold text-darkestGreen transition-colors disabled:bg-green'
 		>
-			{props.loading ? <Loader2 className='animate-spin' /> : (props.song ? 'Update' : 'Add')}
+			{props.loading ? <Loader2 className='animate-spin' /> : (!props.song || props.import ? 'Add' : 'Update')}
 		</button>
 	);
 };

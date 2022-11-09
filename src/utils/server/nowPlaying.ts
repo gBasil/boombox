@@ -12,6 +12,15 @@ type Song = {
 
 let nowPlaying: Song;
 let lastUpdated: number;
+/*
+
+If/when implemented, it would look like this:
+
+const handler: NextApiHandler<NowPlaying> = (req, res) => {
+	res.json(getNowPlaying());
+};
+
+*/
 const getNowPlaying = (): NowPlaying => {
 	// No song or last updated too long ago
 	if (!nowPlaying || lastUpdated < Date.now() - 30 * 1000)

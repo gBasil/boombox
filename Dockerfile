@@ -49,6 +49,9 @@ COPY . .
 # Uncomment the following line in case you want to disable telemetry during the build.
 ENV NEXT_TELEMETRY_DISABLED 1
 
+# Disable env checks when building in Docker
+ENV DOCKER_BUILD YES
+
 RUN \
   if [ -f yarn.lock ]; then yarn build; \
   elif [ -f package-lock.json ]; then npm run build; \
@@ -63,7 +66,6 @@ RUN \
 # Production image, copy all the files and run next
 # TODO: re-evaluate if emulation is still necessary after moving to node 18
 FROM --platform=linux/amd64 node:16-alpine AS runner
-# WORKDIR /usr/app
 WORKDIR /app
 
 ENV NODE_ENV production
@@ -81,6 +83,9 @@ COPY --from=builder /app/package.json ./package.json
 # https://nextjs.org/docs/advanced-features/output-file-tracing
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+
+# Prisma migrations
+COPY --from=builder --chown=nextjs:nodejs /app/prisma ./prisma
 
 USER nextjs
 

@@ -9,6 +9,8 @@ To quote myself, as per the text on the homepage of the website:
 ## Notes
 
 - When adding the authors of a song, type their names separated by "`, `"
+- Boombox uses [Logto](https://logto.io) for authentication and [Maloja](https://github.com/krateng/maloja) for scrobbling
+- Larger thumnails won't upload due to a 3MB Next.js API route limit, as downsizing the image on the frontend isn't implemented yet
 
 ## Running
 
@@ -16,10 +18,11 @@ Boombox can be run as a Next.js app, or under Docker. Pick your poison.
 
 ### Next.js
 
-1. Install Node.js and Yarn.
-2. Set up an instance of [Logto](https://logto.io).
+1. Install Node.js and Yarn and clone the repo.
+2. Set up instances of Logto and Maloja.
 3. Copy `.env.example` to `.env`, and fill in the values as instructed.
-4. Run the following commands in a terminal in this directory to start it:
+4. Make sure you add a redirect URI in Logto (`<URL to Boombox>/api/logto/sign-in-callback`).
+5. Run the following commands in a terminal in this directory to start it:
     ```sh
 	# Install dependencies
 	yarn
@@ -31,13 +34,17 @@ Boombox can be run as a Next.js app, or under Docker. Pick your poison.
 
 ### Docker
 
-1. Install Docker.
-2. Copy `docker-compose.example.yml` to `docker-compose.yml`, and change the environment variables. It would also be advised to change the postgres credentials.
+The Docker Compose configuration will run Boombox itself, as well as Maloja with Logto and Maloja.
+
+1. Install Docker and clone the repo.
+2. Copy `docker-compose.example.yml` to `docker-compose.yml`, and change the environment variables that you currently can, like the domain-related ones.
 3. Run the following commands in a terminal in this directory to start it:
 	```sh
-	# Start the Docker containers. Add the -d flag to run it in the background
+	# Start the Docker containers.
 	docker compose up
 	```
+4. Go to Logto and Maloja and update the `docker-compose.yml` file with the proper environment variables, then stop the the containers (CTRL+C). Make sure you add a redirect URI in Logto (`<URL to Boombox>/api/logto/sign-in-callback`).
+5. Start them again by using the same command. You can append the `-d` flag to have it run in the background this time.
 
 ## Developing
 

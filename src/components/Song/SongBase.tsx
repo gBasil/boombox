@@ -7,6 +7,7 @@ type Props = {
 	song: Song;
 	playing?: boolean;
 	className?: string;
+	cache?: string;
 	onClick?: () => void;
 };
 
@@ -17,7 +18,10 @@ const Song = (props: Props) => (
 	>
 		<div className='relative w-[72px] shrink-0'>
 			<Image
-				src={`/api/cover/${props.song.id}`}
+				// Don't cache images
+				src={`/api/cover/${props.song.id}${
+					props.cache ? `?c=${props.cache}` : ''
+				}`}
 				// Don't proxy the image
 				unoptimized
 				alt=''
