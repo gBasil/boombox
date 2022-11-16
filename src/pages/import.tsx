@@ -6,9 +6,8 @@ import { motion } from 'framer-motion';
 import { variants } from '.';
 import Button from '../components/Button';
 import importSongs, { ImportedSong } from '../utils/client/import';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import AddSong from '../components/AddSong';
-import Song from '../types/Song';
 import { trpc } from '../utils/trpc';
 import { Values as AddSongInput } from '../components/AddSong/types';
 import toast from 'react-hot-toast';
@@ -16,7 +15,6 @@ import toast from 'react-hot-toast';
 const Manage: NextPage = () => {
 	const { client } = trpc.useContext();
 	const fileInput = useRef<HTMLInputElement>(null);
-	// const [open, setOpen] = useState(false);
 	const [song, setSong] = useState<AddSongInput | undefined>(undefined);
 	const [songs, setSongs] = useState<ImportedSong[]>([]);
 
@@ -28,7 +26,6 @@ const Manage: NextPage = () => {
 			.query('manage.info', song.id)
 			.then((info) => {
 				setSong({
-					// id: song?.id,
 					authors: info.channel.replace(' - Topic', ''),
 					date: song.date,
 					cover: '',
@@ -38,9 +35,11 @@ const Manage: NextPage = () => {
 			})
 			.catch(() => {
 				toast.error(`Could not get info for video with ID ${song.id}`, {
-					duration: 10 * 1000
+					duration: 10 * 1000,
 				});
-				console.error(`Could not get info for video with ID ${song.id}`);
+				console.error(
+					`Could not get info for video with ID ${song.id}`
+				);
 				setSongs(songs.slice(1));
 			});
 	}, [songs]);
@@ -86,10 +85,10 @@ const Manage: NextPage = () => {
 				<AddSong
 					import
 					open={!!songs.length && !!song}
-					setOpen={() => {}}
-					song={
-						song
-					}
+					setOpen={() => {
+						return;
+					}}
+					song={song}
 					setSong={() => {
 						setSong(undefined);
 						setSongs(songs.slice(1));
