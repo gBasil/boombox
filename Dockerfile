@@ -30,8 +30,6 @@ RUN \
 FROM --platform=linux/amd64 node:16-alpine AS builder
 
 ARG DATABASE_URL
-ARG NEXT_PUBLIC_CLIENTVAR
-ARG DATABASE_URL
 ARG LOGTO_ENDPOINT
 ARG LOGTO_BASE_URL
 ARG LOGTO_COOKIE_SECRET
@@ -52,12 +50,7 @@ ENV NEXT_TELEMETRY_DISABLED 1
 # Disable env checks when building in Docker
 ENV DOCKER_BUILD YES
 
-RUN \
-  if [ -f yarn.lock ]; then yarn build; \
-  elif [ -f package-lock.json ]; then npm run build; \
-  elif [ -f pnpm-lock.yaml ]; then yarn global add pnpm && pnpm run build; \
-  else echo "Lockfile not found." && exit 1; \
-  fi
+RUN yarn build
 
 ########################
 #        RUNNER        #
