@@ -13,14 +13,6 @@ export const prisma =
 			env.NODE_ENV === 'development'
 				? ['query', 'error', 'warn']
 				: ['error'],
-		datasources: {
-			db: {
-				url: `file:${
-					// TODO: Test if this works
-					env.NODE_ENV === 'production' ? './data/db.sqlite' : '../data/db.sqlite'
-				}`,
-			},
-		},
 	});
 
 if (env.NODE_ENV !== 'production') {

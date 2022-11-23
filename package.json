@@ -6,6 +6,7 @@
 		"dev": "next dev",
 		"build": "next build",
 		"start": "prisma migrate deploy && next start",
+		"start:docker": "/app/node_modules/prisma/build/index.js migrate deploy && node server.js",
 		"lint": "next lint",
 		"gen": "yarn postinstall",
 		"postinstall": "export CHECKPOINT_DISABLE=1 && prisma generate"
