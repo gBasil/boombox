@@ -26,6 +26,8 @@ services:
       - MALOJA_API_KEY=IZqYmJgEt4E1YDk1Eb3PnJbgFxGW3jLowuPkELP121JaLJlq1uELBiekzehch0ZL
 
       # Boombox
+      # URL to database
+      - DATABASE_URL=file:/app/data/db.sqlite
       # Whether to require admin authentication for the /api/maloja-redirect (/maloja redirects to that) route.
       # Optional, defaults to false.
       # BOOMBOX_MALOJA_REQUIRE_AUTH=false
