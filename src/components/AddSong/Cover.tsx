@@ -18,15 +18,19 @@ const Cover = (props: CoverProps) => {
 	const [loading, setLoading] = useState(false);
 
 	const refresh = async (auto?: true) => {
-		if (!auto && values.youtubeId.length !== 11) return toast.error('Invalid YouTube ID');
-		// A tad messy, but it filters out invalid values
-		if (auto && !props.song) return;
-		if (props.song?.youtubeId.length !== 11) return;
+		// If we aren't importing a song, then make ensure that the ID is valid
+		if (!auto && values.youtubeId.length !== 11)
+			return toast.error('Invalid YouTube ID');
+		// If we are importing a song, make sure the imported ID is valid
+		if (auto && props.song?.youtubeId.length !== 11) return;
 
 		setLoading(true);
 
 		client
-			.query('manage.thumbnail', auto ? props.song.youtubeId : values.youtubeId)
+			.query(
+				'manage.thumbnail',
+				auto ? (props.song as Values).youtubeId : values.youtubeId
+			)
 			.then(async (data) => {
 				setFieldValue('cover', data);
 				setLoading(false);
