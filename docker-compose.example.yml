@@ -36,18 +36,18 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-    image: ghcr.io/logto-io/logto:${TAG-latest}
+    image: ghcr.io/logto-io/logto:prerelease
     ports:
       - 3001:3001
     environment:
-      - ALL_YES=1
-      - NO_INQUIRY=0
       - TRUST_PROXY_HEADER=1
-      - DB_URL_DEFAULT=postgres://postgres:p0stgr3s@postgres:5432
+      - DB_URL=postgres://postgres:p0stgr3s@postgres:5432/logto
       - ENDPOINT
   postgres:
     image: postgres:14-alpine
     user: postgres
+    # TODO: Make the data directory configurable via ENV vars
+      - ./other-data/postgres:/var/lib/postgresql/data
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: p0stgr3s
@@ -56,3 +56,12 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+  maloja:
+    image: krateng/maloja
+    ports:
+      - 42010:42010
+    volumes:
+      - ./other-data/maloja:/mljdata
+    environment:
+      - MALOJA_DATA_DIRECTORY=/mljdata
+      - MALOJA_FORCE_PASSWORD=testpass
