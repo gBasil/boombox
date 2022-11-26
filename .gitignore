@@ -42,6 +42,5 @@ yarn-error.log*
 /data/db.sqlite
 
 # local testing
-/logto
-/maloja
+/other-data
 docker-compose.yml

@@ -86,16 +86,21 @@ const Home: NextPage<Props> = (props) => (
 
 			<div className='flex justify-center gap-3'>
 				<Link href='/playlist'>
-					<Button>
-						Enter <ArrowRight height={16} width={16} />
-					</Button>
+					<a>
+						<Button>
+							Enter <ArrowRight height={16} width={16} />
+						</Button>
+					</a>
 				</Link>
 
 				{props.user.isAuthenticated ? (
 					<Link href='/manage'>
-						<Button>
-							Dashboard <LayoutDashboard height={16} width={16} />
-						</Button>
+						<a>
+							<Button>
+								Dashboard{' '}
+								<LayoutDashboard height={16} width={16} />
+							</Button>
+						</a>
 					</Link>
 				) : null}
 			</div>
