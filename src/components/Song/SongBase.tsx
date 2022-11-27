@@ -38,7 +38,7 @@ const Song = (props: Props) => (
 				}`}
 			/>
 			<div
-				className={`absolute inset-0 rounded-1 ${
+				className={`absolute inset-0 rounded-1 pointer-events-none ${
 					props.song.media.flagged ? 'bg-red' : 'bg-lightestGreen'
 				} opacity-0 transition-opacity group-hover:opacity-30`}
 			/>
