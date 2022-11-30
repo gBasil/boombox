@@ -133,6 +133,7 @@ const Playlist: NextPage<Props> = (props) => {
 						animate={{
 							opacity: zen ? 0 : 1,
 						}}
+						className={zen ? 'pointer-events-none' : ''}
 					>
 						<div className='z-10 m-auto mt-8 mb-[216px] flex max-w-2col flex-col gap-2'>
 							{props.songs.length ? (
