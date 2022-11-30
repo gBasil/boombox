@@ -14,8 +14,8 @@ WORKDIR /app
 # Install Prisma Client - remove if not using Prisma
 COPY prisma ./
 
-# Install dependencies based on the preferred package manager
-COPY package.json yarn.lock* package-lock.json* pnpm-lock.yaml* ./
+# Install dependencies
+COPY package.json yarn.lock* ./
 RUN yarn --frozen-lockfile --ignore-engines
 
 ########################
@@ -34,6 +34,7 @@ ARG LOGTO_APP_ID
 ARG LOGTO_APP_SECRET
 ARG MALOJA_URL
 ARG MALOJA_API_KEY
+ARG BOOMBOX_MALOJA_REQUIRE_AUTH
 
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules

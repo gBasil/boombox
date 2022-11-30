@@ -6,7 +6,15 @@ const scrobblable = (length: number, seconds: number) =>
 	seconds >= length / 2 || seconds >= 60 * 4;
 
 const save = (song: Song, durations: number[]) => {
-	for (const duration of durations)
+	// We seem to have to calculate offsets, because otherwise Maloja seems to treat it as a single scrobble
+	const now = Math.floor(Date.now() / 1000);
+	let offset = 0;
+	
+	for (let i = 0; i < durations.length; i++) {
+		// Iterate backwards
+		const duration = durations[durations.length - 1 - i];
+		if (!duration) return;
+
 		fetch(`${env.MALOJA_URL}/apis/mlj_1/newscrobble`, {
 			method: 'POST',
 			headers: {
@@ -17,9 +25,13 @@ const save = (song: Song, durations: number[]) => {
 				artists: song.authors.map((author) => author.name),
 				duration: duration, // Length of listen
 				length: song.media.duration, // Length of song
-				key: process.env.MALOJA_API_KEY
+				key: process.env.MALOJA_API_KEY,
+				time: now - offset
 			}),
-		});
+		}).then(a => console.log(a.status));
+
+		offset += duration;
+	}
 };
 
 /**
