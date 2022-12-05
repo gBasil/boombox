@@ -1,6 +1,6 @@
 const Celeste = () => (
 	<>
-		<g clip-path='url(#clip0_331_131)'>
+		<g clipPath='url(#clip0_331_131)'>
 			<rect width='840' height='368' fill='#DCDBD7' />
 			<rect
 				width='840'
@@ -22,7 +22,7 @@ const Celeste = () => (
 				<path
 					d='M324 120L348 85.3333L356 96.8889L396 39.1111M396 39.1111L404 50.6667L412 39.1111L420 50.6667L428 39.1111M396 39.1111L412 16L428 39.1111M428 39.1111L452 73.7778L468 50.6667L516 120'
 					stroke='#084073'
-					stroke-width='3'
+					strokeWidth='3'
 				/>
 			</g>
 			<rect x='72' y='16' width='80' height='64' fill='#DCDBD7' />
