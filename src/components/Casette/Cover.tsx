@@ -4,6 +4,10 @@ import Default from './covers/Default';
 import CloudsInTheBlue from './covers/CloudsInTheBlue';
 import YourReality from './covers/YourReality';
 import Shelter from './covers/Shelter';
+import Celeste from './covers/Celeste';
+import Skatebird from './covers/Skatebird';
+import Lagtrain from './covers/Lagtrain';
+import AGoodSongNeverDies from './covers/AGoodSongNeverDies';
 
 type CoverTypes = {
 	song?: Song;
@@ -17,6 +21,17 @@ const Cover = ({ song }: CoverTypes) => {
 			return <YourReality />;
 		case 'SR-YU-VoiBc':
 			return <CloudsInTheBlue />;
+		case 'hsUr8nZAL-M':
+		case 'JioS6EtuJ_8':
+		case 'iw7JTa9BCO8':
+			// Technically not that accurate, since it's both A & B side tracks
+			return <Celeste />;
+		case 'yv_p-OeUeDk':
+			return <Skatebird />;
+		case 'VfBswbj1824':
+			return <Lagtrain />;
+		case 'G3XdVEDBXJI':
+			return <AGoodSongNeverDies />;
 		// 7 Grand dad. Roundabout reference which only one person *may* understand if they stumble across this. 
 		// 	return <Default song={{
 		// 		...song,
