@@ -29,9 +29,6 @@ services:
       # Boombox
       # URL to database
       - DATABASE_URL=file:/app/data/db.sqlite
-      # Whether to require admin authentication for the /api/maloja-redirect (/maloja redirects to that) route.
-      # Optional, defaults to false.
-      # BOOMBOX_MALOJA_REQUIRE_AUTH=false
   logto:
     depends_on:
       postgres:

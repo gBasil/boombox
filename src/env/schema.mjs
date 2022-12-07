@@ -14,10 +14,7 @@ export const serverSchema = z.object({
 	LOGTO_APP_ID: z.string(),
 	LOGTO_APP_SECRET: z.string(),
 	MALOJA_URL: z.string().url(),
-	MALOJA_API_KEY: z.string(),
-
-	// TODO: Actually parse booleans
-	BOOMBOX_MALOJA_REQUIRE_AUTH: z.enum(['true', 'false']).optional().default('false')
+	MALOJA_API_KEY: z.string()
 });
 
 /**
