@@ -7,6 +7,7 @@ import { LogtoContext } from '@logto/next';
 import Meta from '../components/Meta';
 import { motion, Variants } from 'framer-motion';
 import Button from '../components/Button';
+import { env } from '../env/server';
 
 type Props = {
 	user: LogtoContext;
@@ -81,6 +82,7 @@ const Home: NextPage<Props> = (props) => (
 					</a>
 					, this is the result.
 				</p>
+				<p className='mt-3'>If you want to view scrobble data/play statistics, you can do so on the <a className='link' href='https://maloja.gbasil.dev'>Maloja instance</a>.</p>
 				<p className='mt-3 emphasis'>~ Basil</p>
 			</div>
 
@@ -109,7 +111,7 @@ const Home: NextPage<Props> = (props) => (
 );
 
 const getServerSideProps = logtoClient.withLogtoSsr(({ req }) => ({
-	props: { user: req.user },
+	props: { user: req.user, maloja: env.MALOJA_URL },
 }));
 
 export default Home;
