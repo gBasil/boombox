@@ -13,6 +13,29 @@ import { setNowPlaying } from '../../utils/server/nowPlaying';
 import scrobble from '../../utils/server/scrobble';
 import bufferToURI from '../../utils/bufferToURI';
 import { env } from '../../env/server';
+import clamp from '../../utils/server/clamp';
+import hslToHex from '../../utils/server/hslTohex';
+
+const getColors = async (buff: Buffer) => {
+	const colors = await Vibrant.from(buff).maxColorCount(3).getPalette();
+
+	// BG
+	const c1 = colors.LightMuted!.hsl;
+	// Inner stripe, leaf bg
+	const c2 = colors.Muted!.hsl;
+	// Outer stripe, inner stroke
+	const c3 = colors.DarkMuted!.hsl;
+
+	c1[1] = 18 / 100;
+	// BG light
+	c1[2] = clamp(c1[2], 59 / 100, 1);
+	c2[1] = 19 / 100;
+	c2[2] = 40 / 100;
+	c3[1] = 21 / 100;
+	c3[2] = 26 / 100;
+
+	return [hslToHex(c1), hslToHex(c2), hslToHex(c3)];
+};
 
 const song = z.object({
 	id: z.number(),
@@ -59,7 +82,7 @@ export const manageRouter = createRouter()
 			// Zod doesn't seem to support partials
 			youtubeId: z.string(),
 			cover: z.string(),
-			date: z.date().optional()
+			date: z.date().optional(),
 		}),
 		resolve: async ({ input }) => {
 			// Create and add the media to the song
@@ -75,13 +98,12 @@ export const manageRouter = createRouter()
 			// Get colors from thumbnail
 			const data = sharp(
 				Buffer.from(input.cover.split(',')[1] as string, 'base64')
-			).resize(216, 216);
-			// TODO: Make this actually ensure good contrast
-			const colors = await Vibrant.from(await data.png().toBuffer())
-				.maxColorCount(3)
-				.getPalette();
+			).resize(512, 512);
+			const [color1, color2, color3] = await getColors(
+				await data.png().toBuffer()
+			);
 
-			if (!colors.DarkMuted || !colors.Muted || !colors.LightMuted)
+			if (!color1 || !color2 || !color3)
 				throw new TRPCError({
 					code: 'INTERNAL_SERVER_ERROR',
 					message: 'Failed to get colors from cover',
@@ -104,10 +126,10 @@ export const manageRouter = createRouter()
 							create: { name: author },
 						})),
 					},
-					color1: colors.LightMuted.hex,
-					color2: colors.Muted.hex,
-					color3: colors.DarkMuted.hex,
-					createdAt: input.date
+					color1,
+					color2,
+					color3,
+					createdAt: input.date,
 				},
 			});
 
@@ -138,11 +160,11 @@ export const manageRouter = createRouter()
 			const data = sharp(
 				Buffer.from(input.cover.split(',')[1] as string, 'base64')
 			).resize(216, 216);
-			const colors = await Vibrant.from(await data.png().toBuffer())
-				.maxColorCount(3)
-				.getPalette();
+			const [color1, color2, color3] = await getColors(
+				await data.png().toBuffer()
+			);
 
-			if (!colors.DarkMuted || !colors.Muted || !colors.LightMuted)
+			if (!color1 || !color2 || !color3)
 				throw new TRPCError({
 					code: 'INTERNAL_SERVER_ERROR',
 					message: 'Failed to get colors from cover',
@@ -167,9 +189,9 @@ export const manageRouter = createRouter()
 							flagged: false,
 						},
 					},
-					color1: colors.LightMuted.hex,
-					color2: colors.Muted.hex,
-					color3: colors.DarkMuted.hex,
+					color1,
+					color2,
+					color3,
 				},
 				include: { authors: true },
 			});
@@ -233,7 +255,7 @@ export const manageRouter = createRouter()
 				title: data.videoDetails.title,
 				channel: data.videoDetails.author.name,
 			};
-		}
+		},
 	})
 	// Removes a song by id
 	.mutation('remove', {
