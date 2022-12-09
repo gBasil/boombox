@@ -14,17 +14,18 @@ import scrobble from '../../utils/server/scrobble';
 import bufferToURI from '../../utils/bufferToURI';
 import { env } from '../../env/server';
 import clamp from '../../utils/server/clamp';
-import hslToHex from '../../utils/server/hslTohex';
+import hslToHex from '../../utils/server/hslToHex';
 
 const getColors = async (buff: Buffer) => {
 	const colors = await Vibrant.from(buff).maxColorCount(3).getPalette();
-
+	if (!colors.LightMuted || !colors.Muted || !colors.DarkMuted) throw new Error('Failed to extract colors');
+	
 	// BG
-	const c1 = colors.LightMuted!.hsl;
+	const c1 = colors.LightMuted.hsl;
 	// Inner stripe, leaf bg
-	const c2 = colors.Muted!.hsl;
+	const c2 = colors.Muted.hsl;
 	// Outer stripe, inner stroke
-	const c3 = colors.DarkMuted!.hsl;
+	const c3 = colors.DarkMuted.hsl;
 
 	c1[1] = 18 / 100;
 	// BG light

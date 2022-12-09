@@ -1,5 +1,6 @@
 function hslToHex(hsl: [number, number, number]) {
-	let [h, s, l] = hsl;
+	let [h, s] = hsl;
+	const l = hsl[2];
 	h *= 360;
 	s *= 100;
 	const a = (s * Math.min(l, 1 - l)) / 100;
