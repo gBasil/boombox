@@ -10,8 +10,8 @@ const Document = () => (
 				defer
 				data-website-id='d4a35a5f-a8c9-44cb-9519-3a69de2bda29'
 				data-do-not-track='true'
-				data-domains='boombox.gbasil.dev'
-				src='https://speedcore.gbasil.dev/umami.js'
+				data-domains='boombox.basil.cafe'
+				src='https://umami.basil.cafe/umami.js'
 			/>
 		</Head>
 		<body className='mx-2 bg-darkestGreen font-inter text-lightestGreen'>
