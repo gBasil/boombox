@@ -11,6 +11,7 @@ import { env } from '../env/server';
 
 type Props = {
 	user: LogtoContext;
+	maloja: string;
 };
 
 const variants: Variants = {
@@ -82,7 +83,7 @@ const Home: NextPage<Props> = (props) => (
 					</a>
 					, this is the result.
 				</p>
-				<p className='mt-3'>If you want to view scrobble data/play statistics, you can do so on the <a className='link' href='https://maloja.gbasil.dev'>Maloja instance</a>.</p>
+				<p className='mt-3'>If you want to view scrobble data/play statistics, you can do so on the <a className='link' href={props.maloja}>Maloja instance</a>.</p>
 				<p className='mt-3 emphasis'>~ Basil</p>
 			</div>
 
