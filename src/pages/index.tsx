@@ -94,7 +94,7 @@ const Home: NextPage<Props> = (props) => {
 						If you want to view scrobble data/play statistics, you can do so on the <a className='link' href={props.maloja}>Maloja instance</a>.
 
 						
-						There {props.totalSongCount === 1 ? `is 1 song` : `are ${props.totalSongCount} songs`}, totaling roughly {duration}.
+						There {props.totalSongCount === 1 ? `is 1 song` : `are ${props.totalSongCount} songs`}, and it would take you  roughly {duration} to listen to them all.
 
 						Boombox is <a className='link' href='https://git.basil.cafe/basil/boombox'>open source</a>.
 					</p>
