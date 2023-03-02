@@ -23,7 +23,7 @@ const Popup = (props: PopupProps) => {
 
 	return (
 		<div className='relative w-full'>
-			<div className='absolute bottom-[6px] right-0 h-[160px] w-1col overflow-clip'>
+			<div className={`absolute bottom-[6px] right-0 h-[160px] w-1col overflow-clip ${!props.open ? 'pointer-events-none' : ''}`}>
 				<div
 					className={`flex h-full flex-col gap-2 rounded-t-1 bg-lightGreen p-2 font-bold text-darkestGreen transition-transform duration-300 ${
 						props.open ? 'translate-y-0' : 'translate-y-full'
