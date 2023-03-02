@@ -36,6 +36,20 @@ const Playlist: NextPage<Props> = (props) => {
 	const progressState = useState(0);
 	const { client } = trpc.useContext();
 
+	// Song sharing
+	useEffect(() => {
+		const urlParams = new URLSearchParams(window.location.search);
+		const songId = urlParams.get('id');
+
+		if (!songId) return;
+
+		const song = songListState[0].find(song => song.media.type === 'yt' && song.media.youtubeId === songId);
+
+		if (!song) return;
+
+		setSong(song);
+	}, []);
+
 	// Now Playing
 	// useEffect(() => {
 	// 	// Don't update if we're not an admin, not playing anything, or the song is paused

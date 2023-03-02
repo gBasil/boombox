@@ -1,11 +1,13 @@
 import * as Slider from '@radix-ui/react-slider';
-import { Dices, Volume2 } from 'lucide-react';
+import { Dices, Link, Volume2, Youtube } from 'lucide-react';
 import { useContext } from 'react';
 import UseState from '../../types/UseState';
 import shuffle from './actions/shuffle';
 import Casette from './Casette';
 import { PlayerContext } from './playerContext';
 import YouTubePlayer from './YouTubePlayer';
+import copy from 'clipboard-copy';
+import { toast } from 'react-hot-toast';
 
 type PopupProps = {
 	open: boolean;
@@ -20,10 +22,23 @@ const Popup = (props: PopupProps) => {
 		zen: [zen, setZen],
 	} = useContext(PlayerContext);
 	const [, setVolume] = props.volume;
+	const [songData] = song;
+
+	const share = () => {
+		copy(document.location.origin + document.location.pathname + '?id=' + songData?.media.youtubeId)
+			.then(() => toast.success('Copied Boombox link to clipboard'))
+			.catch(() => toast.error('Error copying Boombox link :('));
+	};
+
+	const openYouTube = () => {
+		if (songData?.media.type !== 'yt') return;
+		const id = songData?.media.youtubeId;
+		window.open(`https://youtube.com/watch?v=${id}`);
+	}
 
 	return (
 		<div className='relative w-full'>
-			<div className={`absolute bottom-[6px] right-0 h-[160px] w-1col overflow-clip ${!props.open ? 'pointer-events-none' : ''}`}>
+			<div className={`absolute bottom-[6px] right-0 w-1col overflow-clip ${!props.open ? 'pointer-events-none' : ''}`}>
 				<div
 					className={`flex h-full flex-col gap-2 rounded-t-1 bg-lightGreen p-2 font-bold text-darkestGreen transition-transform duration-300 ${
 						props.open ? 'translate-y-0' : 'translate-y-full'
@@ -37,6 +52,27 @@ const Popup = (props: PopupProps) => {
 						<Dices />
 						Random song
 					</button>
+					<button
+						className='flex gap-1'
+						onClick={share}
+						disabled={!props.open}
+					>
+						<Link />
+						Share
+					</button>
+					{
+						song[0]?.media.type === 'yt' ?
+						<button
+							className='flex gap-1'
+							onClick={openYouTube}
+							disabled={!props.open}
+						>
+							<Youtube />
+							Open in YouTube
+						</button> :
+						null
+					}
+					{/* YouTube */}
 					<button
 						className='flex gap-1'
 						onClick={() => setZen(!zen)}
