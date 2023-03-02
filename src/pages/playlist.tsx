@@ -9,15 +9,15 @@ import Song from '../types/Song';
 import Casette from '../components/Casette';
 import Meta from '../components/Meta';
 import { logtoClient } from '../utils/server/logto';
-import { LogtoContext } from '@logto/next';
 import { motion } from 'framer-motion';
 import { trpc } from '../utils/trpc';
 import { usePrevious } from '@radix-ui/react-use-previous';
 import { variants } from '.';
+import isAuthed from '../utils/server/isAuthed';
 
 type Props = {
 	songs: SongType[];
-	user: LogtoContext;
+	authed: boolean;
 };
 
 const Playlist: NextPage<Props> = (props) => {
@@ -88,7 +88,7 @@ const Playlist: NextPage<Props> = (props) => {
 			!previousSong ||
 			!duration ||
 			!client ||
-			!props.user.claims?.role_names?.includes('admin')
+			!props.authed
 		)
 			return;
 
@@ -163,6 +163,7 @@ const Playlist: NextPage<Props> = (props) => {
 					</motion.div>
 
 					<Controls
+						authed={props.authed}
 						progress={progressState}
 						playing={[playing, setPlaying]}
 					/>
@@ -185,7 +186,7 @@ const getServerSideProps: GetServerSideProps = logtoClient.withLogtoSsr(
 			props: {
 				// Don't show the videos that aren't available
 				songs: songs.filter((song) => !song.media?.flagged),
-				user: req.user,
+				authed: isAuthed(req.user),
 			} as Props,
 		};
 	}

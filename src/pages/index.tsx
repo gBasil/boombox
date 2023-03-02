@@ -3,16 +3,16 @@ import Casette from '../components/Casette';
 import { ArrowRight, LayoutDashboard } from 'lucide-react';
 import Link from 'next/link';
 import { logtoClient } from '../utils/server/logto';
-import { LogtoContext } from '@logto/next';
 import Meta from '../components/Meta';
 import { motion, Variants } from 'framer-motion';
 import Button from '../components/Button';
 import { env } from '../env/server';
 import { prisma } from '../server/db/client';
 import formatSeconds from '../utils/client/formatSecondsString';
+import isAuthed from '../utils/server/isAuthed';
 
 type Props = {
-	user: LogtoContext;
+	authed: boolean;
 	maloja: string;
 	totalSongCount: number;
 	totalSongDuration: number;
@@ -109,7 +109,7 @@ const Home: NextPage<Props> = (props) => {
 						</a>
 					</Link>
 
-					{props.user.isAuthenticated ? (
+					{props.authed ? (
 						<Link href='/manage'>
 							<a>
 								<Button>
@@ -141,7 +141,7 @@ const getServerSideProps = logtoClient.withLogtoSsr<Props>(async ({ req }) => {
 
 	return {
 		props: {
-			user: req.user,
+			authed: isAuthed(req.user),
 			maloja: env.MALOJA_URL,
 			totalSongCount,
 			totalSongDuration

@@ -1,5 +1,5 @@
 import * as Slider from '@radix-ui/react-slider';
-import { Dices, Link, Volume2, Youtube } from 'lucide-react';
+import { Dices, Edit, Link, Volume2, Youtube } from 'lucide-react';
 import { useContext } from 'react';
 import UseState from '../../types/UseState';
 import shuffle from './actions/shuffle';
@@ -8,8 +8,10 @@ import { PlayerContext } from './playerContext';
 import YouTubePlayer from './YouTubePlayer';
 import copy from 'clipboard-copy';
 import { toast } from 'react-hot-toast';
+import { useRouter } from 'next/router';
 
 type PopupProps = {
+	authed: boolean;
 	open: boolean;
 	player: YouTubePlayer;
 	volume: UseState<number>;
@@ -23,6 +25,7 @@ const Popup = (props: PopupProps) => {
 	} = useContext(PlayerContext);
 	const [, setVolume] = props.volume;
 	const [songData] = song;
+	const router = useRouter();
 
 	const share = () => {
 		copy(document.location.origin + document.location.pathname + '?id=' + songData?.media.youtubeId)
@@ -34,6 +37,13 @@ const Popup = (props: PopupProps) => {
 		if (songData?.media.type !== 'yt') return;
 		const id = songData?.media.youtubeId;
 		window.open(`https://youtube.com/watch?v=${id}`);
+	}
+
+	const edit = () => {
+		router.push({
+			pathname: '/manage',
+			query: { editId: songData?.id }
+		}, '/manage');
 	}
 
 	return (
@@ -81,10 +91,15 @@ const Popup = (props: PopupProps) => {
 						<Casette />
 						Zen Mode
 					</button>
-					{/* <button className='flex gap-1'>
+					
+					<button
+						className='flex gap-1'
+						onClick={edit}
+						disabled={!props.open}
+					>
 						<Edit />
-						Edit Details
-					</button> */}
+						Edit Song
+					</button>
 					<div className={`flex flex-col gap-1 transition-opacity`}>
 						<div className='flex gap-1'>
 							<Volume2 />

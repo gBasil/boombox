@@ -29,6 +29,7 @@ enum EndMode {
 }
 
 type ControlsProps = {
+	authed: boolean;
 	progress: UseState<number>;
 	playing: UseState<boolean>;
 };
@@ -108,6 +109,7 @@ const Controls = (props: ControlsProps) => {
 				{/* Ensure the player controller is passed through */}
 				{player && (
 					<Popup
+						authed={props.authed}
 						open={showPopup}
 						player={player}
 						volume={[volume, setVolume]}

@@ -8,7 +8,7 @@ import {
 	Siren,
 } from 'lucide-react';
 import Link from 'next/link';
-import { createContext, ReactNode, useMemo, useRef, useState } from 'react';
+import { createContext, ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import { SongManage } from '../components/Song';
 import AddSong from '../components/AddSong';
 import { trpc } from '../utils/trpc';
@@ -22,6 +22,8 @@ import toast from 'react-hot-toast';
 import { motion } from 'framer-motion';
 import { variants } from '.';
 import UseState from '../types/UseState';
+import { useRouter } from 'next/router';
+import isAuthed from '../utils/server/isAuthed';
 
 type Props = {
 	songs: SongType[];
@@ -53,6 +55,7 @@ type Thumbnails = Record<string, string>;
 const ThumbnailsContext = createContext<UseState<Thumbnails>>(undefined as any);
 
 const Manage: NextPage<Props> = (props) => {
+	const router = useRouter();
 	const { client } = trpc.useContext();
 	const { data: songs } = trpc.useQuery(['playlist.list'], {
 		initialData: props.songs,
@@ -77,6 +80,40 @@ const Manage: NextPage<Props> = (props) => {
 			behavior: 'smooth',
 		});
 	};
+
+	const editSong = async (id: number) => {
+		const song = songs?.find(song => song.id === id);
+		if (!song) return console.error("Couldn't locate song");
+
+		const cover = await fetch(
+			`/api/cover/${id}`
+		);
+
+		setEditingSong({
+			id,
+			cover: `data:${cover.headers.get(
+				'content-type'
+			)};base64,${Buffer.from(
+				// TODO: Resize on frontend
+				await cover.arrayBuffer()
+			).toString('base64')}`,
+			authors: song.authors
+				.map(({ name }) => name)
+				.join(', '),
+			title: song.title,
+			youtubeId: (song.media as Media)
+				.youtubeId as string,
+		});
+
+		setShowAddSong(true);
+	}
+
+	useEffect(() => {
+		const { editId } = router.query;
+		if (!editId || typeof editId !== 'string') return;
+
+		editSong(parseInt(editId));
+	}, []);
 
 	return (
 		<ThumbnailsContext.Provider value={thumbnails}>
@@ -182,29 +219,7 @@ const Manage: NextPage<Props> = (props) => {
 											  }
 											: {})}
 										song={song as SongType}
-										onClick={async () => {
-											const cover = await fetch(
-												`/api/cover/${song.id}`
-											);
-
-											setEditingSong({
-												id: song.id,
-												cover: `data:${cover.headers.get(
-													'content-type'
-												)};base64,${Buffer.from(
-													// TODO: Resize on frontend
-													await cover.arrayBuffer()
-												).toString('base64')}`,
-												authors: song.authors
-													.map(({ name }) => name)
-													.join(', '),
-												title: song.title,
-												youtubeId: (song.media as Media)
-													.youtubeId as string,
-											});
-
-											setShowAddSong(true);
-										}}
+										onClick={() => editSong(song.id)}
 									/>
 								</div>
 							))
@@ -220,7 +235,7 @@ const Manage: NextPage<Props> = (props) => {
 
 const getServerSideProps: GetServerSideProps = logtoClient.withLogtoSsr(
 	async ({ req }) => {
-		if (!req.user.isAuthenticated)
+		if (!isAuthed(req.user))
 			return {
 				redirect: {
 					destination: '/sign-in',
