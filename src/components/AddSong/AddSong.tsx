@@ -162,12 +162,8 @@ const AddSong = (props: AddSongProps) => {
 													<AlertDialog.Cancel
 														className='rounded-1 bg-red p-1 font-bold text-darkestGreen transition-colors disabled:bg-green'
 														onClick={() => {
-															props.setOpen(
-																false
-															);
-															props.setSong(
-																undefined
-															);
+															props.setOpen(false);
+															props.setSong(undefined);
 														}}
 													>
 														<X />

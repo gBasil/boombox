@@ -4,7 +4,7 @@ import { prisma } from '../db/client';
 import sharp, { Sharp } from 'sharp';
 import { TRPCError } from '@trpc/server';
 import ytdl from 'ytdl-core';
-import fetch from 'node-fetch';
+import fetch, { Response } from 'node-fetch';
 import { rmSync } from 'fs';
 import { Author } from '@prisma/client';
 import Vibrant from 'node-vibrant';
@@ -229,23 +229,37 @@ export const manageRouter = createRouter()
 	.query('thumbnail', {
 		input: z.string(),
 		resolve: async ({ input }) => {
-			//! Sometimes fails to fetch on low res thumbnails
-			// TODO: Try alternate thumbnails until we find one that works
-			const thumbnail = await fetch(
-				`https://i.ytimg.com/vi/${input}/maxresdefault.jpg`
-			);
-
-			if (thumbnail.status !== 200)
+			return await new Promise<Response>(async (resolve, reject) => {
+				try {
+					const thumbnail = await fetch(
+						`https://i.ytimg.com/vi/${input}/maxresdefault.jpg`
+					);
+					if (thumbnail.status !== 200) throw new Error();
+					resolve(thumbnail);
+				} catch {
+					try {
+						// If high resolution fails, fall back to a lower resolution
+						const thumbnail = await fetch(
+							`https://i.ytimg.com/vi/${input}/hqdefault.jpg`
+						);
+						if (thumbnail.status !== 200) throw new Error();
+						resolve(thumbnail);
+					} catch {
+						reject();
+					}
+				}
+			}).then(async thumbnail => {
+				return `data:${thumbnail.headers.get(
+					'content-type'
+				)};base64,${Buffer.from(await thumbnail.arrayBuffer()).toString(
+					'base64'
+				)}`;
+			}).catch(() => {
 				throw new TRPCError({
 					code: 'INTERNAL_SERVER_ERROR',
 					message: 'Could not fetch thumbnail',
 				});
-
-			return `data:${thumbnail.headers.get(
-				'content-type'
-			)};base64,${Buffer.from(await thumbnail.arrayBuffer()).toString(
-				'base64'
-			)}`;
+			});
 		},
 	})
 	.query('info', {

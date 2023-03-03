@@ -56,7 +56,6 @@ const Cover = (props: CoverProps) => {
 					<Image
 						src={values.cover}
 						alt='Cover'
-						// https://i.ytimg.com/vi/AoV1EIxj4B8/maxresdefault.jpg
 						width={216}
 						height={216}
 						className='h-full w-full border-lightestGreen object-cover'
