@@ -82,7 +82,6 @@ const Popup = (props: PopupProps) => {
 						</button> :
 						null
 					}
-					{/* YouTube */}
 					<button
 						className='flex gap-1'
 						onClick={() => setZen(!zen)}
@@ -92,14 +91,14 @@ const Popup = (props: PopupProps) => {
 						Zen Mode
 					</button>
 					
-					<button
+					{props.authed ? <button
 						className='flex gap-1'
 						onClick={edit}
 						disabled={!props.open}
 					>
 						<Edit />
 						Edit Song
-					</button>
+					</button> : null}
 					<div className={`flex flex-col gap-1 transition-opacity`}>
 						<div className='flex gap-1'>
 							<Volume2 />
