@@ -39,36 +39,17 @@ const Playlist: NextPage<Props> = (props) => {
 	// Song sharing
 	useEffect(() => {
 		const urlParams = new URLSearchParams(window.location.search);
-		const songId = urlParams.get('id');
+		const songIdStr = urlParams.get('id');
+		if (!songIdStr) return;
+		const songId = parseInt(songIdStr);
+		if (Number.isNaN(songId)) return;
 
-		if (!songId) return;
-
-		const song = songListState[0].find(song => song.media.type === 'yt' && song.media.youtubeId === songId);
+		const song = songListState[0].find(song => song.id === songId);
 
 		if (!song) return;
 
 		setSong(song);
 	}, []);
-
-	// Now Playing
-	// useEffect(() => {
-	// 	// Don't update if we're not an admin, not playing anything, or the song is paused
-	// 	if (
-	// 		!props.user.claims?.role_names?.includes('admin') ||
-	// 		!song ||
-	// 		!playing
-	// 	)
-	// 		return;
-
-	// 	const update = () => {
-	// 		if (song) client.mutation('manage.nowPlaying', song);
-	// 	};
-
-	// 	const i = setInterval(update, 15 * 1000);
-	// 	update();
-
-	// 	return () => clearInterval(i);
-	// }, [song, playing, client, props.user.claims?.role_names]);
 
 	// Update the scrobbling interval
 	useEffect(() => {

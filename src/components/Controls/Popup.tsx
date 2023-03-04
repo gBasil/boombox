@@ -28,7 +28,7 @@ const Popup = (props: PopupProps) => {
 	const router = useRouter();
 
 	const share = () => {
-		copy(document.location.origin + document.location.pathname + '?id=' + songData?.media.youtubeId)
+		copy(document.location.origin + document.location.pathname + '?id=' + songData?.id)
 			.then(() => toast.success('Copied Boombox link to clipboard'))
 			.catch(() => toast.error('Error copying Boombox link :('));
 	};
