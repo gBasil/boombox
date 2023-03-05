@@ -8,12 +8,15 @@ import Celeste from './covers/Celeste';
 import Skatebird from './covers/Skatebird';
 import Lagtrain from './covers/Lagtrain';
 import AGoodSongNeverDies from './covers/AGoodSongNeverDies';
+import TripleBaka from './covers/TripleBaka';
 
 type CoverTypes = {
 	song?: Song;
 };
 
 const Cover = ({ song }: CoverTypes) => {
+	if (song?.media.type !== 'yt') return <Default song={song} />;
+
 	switch (song?.media.youtubeId) {
 		case '5UZ4V16d8eU':
 			return <Shelter />;
@@ -32,6 +35,9 @@ const Cover = ({ song }: CoverTypes) => {
 			return <Lagtrain />;
 		case 'G3XdVEDBXJI':
 			return <AGoodSongNeverDies />;
+		case 'HhN4wdpbPrg':
+		case 'duPJqfKiA78':
+			return <TripleBaka />;
 		// 7 Grand dad. Roundabout reference which only one person *may* understand if they stumble across this. 
 		// 	return <Default song={{
 		// 		...song,
