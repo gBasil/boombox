@@ -46,7 +46,6 @@ const Cover = (props: CoverProps) => {
 	useEffect(() => {
 		if (props.initialRefresh && props.song) {
 			refresh(true);
-			console.log('refresh', props.song.title);
 		}
 	}, [props.initialRefresh, props.song]);
 

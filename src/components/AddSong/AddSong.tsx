@@ -11,6 +11,7 @@ import Cover from './Cover';
 import UpdateForm from './UpdateForm';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ThumbnailsContext } from '../../pages/manage';
+import FetchData from './FetchData';
 
 type AddSongProps = {
 	className?: string;
@@ -146,13 +147,16 @@ const AddSong = (props: AddSongProps) => {
 													placeholder='Lena Raine'
 													className='child:w-full'
 												/>
-												<TextInput
-													label='YouTube ID'
-													name='youtubeId'
-													placeholder='VXIqXaX1blY'
-													className='mt-2 child:w-full'
-													length={11}
-												/>
+												<div className='flex gap-1 items-end'>
+													<TextInput
+														label='YouTube ID'
+														name='youtubeId'
+														placeholder='VXIqXaX1blY'
+														className='mt-2 child:w-full'
+														length={11}
+													/>
+													<FetchData />
+												</div>
 												<div className='mt-[48px] flex flex-row gap-1'>
 													<SubmitButton
 														import={props.import}
